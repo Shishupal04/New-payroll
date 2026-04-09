@@ -96,7 +96,11 @@
       margin-left: var(--sidebar-w);
       margin-top: var(--topbar-h);
       padding: 22px 26px;
-      min-height: calc(100vh - var(--topbar-h));
+      height: calc(100vh - var(--topbar-h));
+      overflow-y: auto;
+    }  
+    #dashboard-grid {
+      min-height: 120%;
     }
 
     /* ── Cards / Tables ── */
