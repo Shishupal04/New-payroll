@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block page_title %}User Management{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+    <i class="bi bi-person-plus me-1"></i>Add User
+  </button>
+</div>
+
+<div class="card">
+  <div class="card-header">System Users</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.84rem">
+      <thead><tr>
+        <th>#</th><th>Username</th><th>Email</th><th>Role</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="fw-semibold">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:28px;height:28px;border-radius:50%;background:#2563eb;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700">
+                {{ u['username'][0].upper() }}
+              </div>
+              {{ u['username'] }}
+            </div>
+          </td>
+          <td>{{ u['email'] or '—' }}</td>
+          <td>
+            {% if u['role']=='admin' %}<span class="badge bg-danger">Admin</span>
+            {% elif u['role']=='hr' %}<span class="badge bg-primary">HR</span>
+            {% else %}<span class="badge bg-secondary">Accountant</span>{% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <button class="btn btn-xs btn-outline-primary" style="font-size:.75rem;padding:2px 8px"
+                data-bs-toggle="modal" data-bs-target="#editUser{{ u['id'] }}"><i class="bi bi-pencil"></i></button>
+              {% if u['id'] != 1 %}
+              <form method="POST" action="/delete_user/{{ u['id'] }}" onsubmit="return confirm('Delete user?')">
+                <button class="btn btn-xs btn-outline-danger" style="font-size:.75rem;padding:2px 8px"><i class="bi bi-trash"></i></button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editUser{{ u['id'] }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST" action="/edit_user/{{ u['id'] }}">
+                <div class="modal-header" style="background:#0f2557;color:#fff">
+                  <h6 class="modal-title mb-0">Edit User — {{ u['username'] }}</h6>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-6"><label class="form-label">Username</label>
+                      <input type="text" name="username" class="form-control form-control-sm" value="{{ u['username'] }}" required/></div>
+                    <div class="col-6"><label class="form-label">New Password</label>
+                      <input type="password" name="password" class="form-control form-control-sm" placeholder="Leave blank to keep"/></div>
+                    <div class="col-6"><label class="form-label">Role</label>
+                      <select name="role" class="form-select form-select-sm">
+                        <option {% if u['role']=='admin' %}selected{% endif %}>admin</option>
+                        <option {% if u['role']=='hr' %}selected{% endif %}>hr</option>
+                        <option {% if u['role']=='accountant' %}selected{% endif %}>accountant</option>
+                      </select></div>
+                    <div class="col-6"><label class="form-label">Email</label>
+                      <input type="email" name="email" class="form-control form-control-sm" value="{{ u['email'] or '' }}"/></div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <tr><td colspan="5" class="text-center py-4 text-muted">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/add_user">
+        <div class="modal-header" style="background:#0f2557;color:#fff">
+          <h6 class="modal-title mb-0"><i class="bi bi-person-gear me-2"></i>Add User</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-6"><label class="form-label">Username *</label>
+              <input type="text" name="username" class="form-control form-control-sm" required/></div>
+            <div class="col-6"><label class="form-label">Password *</label>
+              <input type="password" name="password" class="form-control form-control-sm" required/></div>
+            <div class="col-6"><label class="form-label">Role</label>
+              <select name="role" class="form-select form-select-sm">
+                <option>admin</option><option>hr</option><option>accountant</option>
+              </select></div>
+            <div class="col-6"><label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control form-control-sm"/></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg me-1"></i>Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

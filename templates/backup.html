@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Backup{% endblock %}
+{% block page_title %}Database Backup{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3">
+  <a href="/backup" class="btn btn-sm btn-primary"><i class="bi bi-cloud-arrow-up me-1"></i>Create Backup Now</a>
+</div>
+<div class="card">
+  <div class="card-header">Backup Files</div>
+  <div class="table-responsive">
+    <table class="table mb-0" style="font-size:.84rem">
+      <thead><tr><th>#</th><th>Filename</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for f in files %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><i class="bi bi-database me-1 text-primary"></i>{{ f }}</td>
+          <td>
+            <a href="/restore/{{ f }}" class="btn btn-xs btn-outline-warning" style="font-size:.75rem;padding:2px 8px"
+              onclick="return confirm('Restore this backup? Current data will be overwritten.')">
+              <i class="bi bi-arrow-counterclockwise"></i> Restore
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="text-center py-4 text-muted">No backups yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

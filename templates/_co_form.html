@@ -1,0 +1,46 @@
+<div class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label">Company Name *</label>
+    <input type="text" name="name" class="form-control form-control-sm" value="{{ co['name'] if co else '' }}" required/>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Address</label>
+    <input type="text" name="address" class="form-control form-control-sm" value="{{ co['address'] if co else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">City</label>
+    <input type="text" name="city" class="form-control form-control-sm" value="{{ co['city'] if co else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">State</label>
+    <input type="text" name="state" class="form-control form-control-sm" value="{{ co['state'] if co else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Pincode</label>
+    <input type="text" name="pincode" class="form-control form-control-sm" value="{{ co['pincode'] if co else '' }}"/>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control form-control-sm" value="{{ co['email'] if co else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Phone</label>
+    <input type="text" name="phone" class="form-control form-control-sm" value="{{ co['phone'] if co else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">PF Registration No.</label>
+    <input type="text" name="pf" class="form-control form-control-sm" value="{{ co['pf_number'] if co else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">ESI Registration No.</label>
+    <input type="text" name="esi" class="form-control form-control-sm" value="{{ co['esi_number'] if co else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">PAN</label>
+    <input type="text" name="pan" class="form-control form-control-sm" value="{{ co['pan'] if co else '' }}" style="font-family:'DM Mono',monospace"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">TAN</label>
+    <input type="text" name="tan" class="form-control form-control-sm" value="{{ co['tan'] if co else '' }}" style="font-family:'DM Mono',monospace"/>
+  </div>
+</div>

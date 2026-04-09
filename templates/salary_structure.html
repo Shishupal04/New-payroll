@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Salary Structure{% endblock %}
+{% block page_title %}Salary Structure{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-layers me-1"></i> Employee Salary Components
+    <span class="text-muted fw-normal ms-2" style="font-size:.8rem">Click Edit to update any employee's salary</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.84rem">
+      <thead><tr>
+        <th>#</th><th>Code</th><th>Name</th><th>Department</th><th>Designation</th>
+        <th class="text-end">Basic</th><th class="text-end">HRA</th>
+        <th class="text-end">Tax Allow.</th><th class="text-end">Night Shift</th>
+        <th class="text-end">PF Relief</th><th class="text-end">Gross CTC</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>
+        {% for e in employees %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><code style="font-size:.78rem">{{ e['emp_code'] }}</code></td>
+          <td class="fw-semibold">{{ e['name'] }}</td>
+          <td>{{ e['department'] }}</td>
+          <td>{{ e['designation'] }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(e['basic']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(e['hra']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(e['taxable_allow']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(e['night_shift_allow']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(e['pf_relief']) }}</td>
+          <td class="text-end fw-bold text-primary">
+            ₹{{ "{:,.0f}".format(e['basic']+e['hra']+e['taxable_allow']+e['night_shift_allow']+e['pf_relief']) }}
+          </td>
+          <td>
+            <button class="btn btn-xs btn-outline-primary" style="font-size:.75rem;padding:2px 8px"
+              data-bs-toggle="modal" data-bs-target="#editModal{{ e['id'] }}">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+          </td>
+        </tr>
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editModal{{ e['id'] }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST" action="/update_salary_structure/{{ e['id'] }}">
+                <div class="modal-header" style="background:#0f2557;color:#fff">
+                  <h6 class="modal-title mb-0">Update Salary — {{ e['name'] }}</h6>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Basic (₹)</label>
+                      <input type="number" name="basic" class="form-control form-control-sm" step="0.01" value="{{ e['basic'] }}" required/>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">HRA (₹)</label>
+                      <input type="number" name="hra" class="form-control form-control-sm" step="0.01" value="{{ e['hra'] }}"/>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Taxable Allowance (₹)</label>
+                      <input type="number" name="taxable_allow" class="form-control form-control-sm" step="0.01" value="{{ e['taxable_allow'] }}"/>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Night Shift Allow. (₹)</label>
+                      <input type="number" name="night_shift_allow" class="form-control form-control-sm" step="0.01" value="{{ e['night_shift_allow'] }}"/>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">PF Relief (₹)</label>
+                      <input type="number" name="pf_relief" class="form-control form-control-sm" step="0.01" value="{{ e['pf_relief'] }}"/>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Remarks</label>
+                      <input type="text" name="remarks" class="form-control form-control-sm" placeholder="e.g. Annual revision"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-sm btn-success">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <tr><td colspan="12" class="text-center py-4 text-muted">No active employees.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

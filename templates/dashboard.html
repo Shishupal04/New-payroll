@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — PayrollPro{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<p class="text-muted mb-3" style="font-size:.85rem">
+  <i class="bi bi-calendar3 me-1"></i>{{ today }}
+  &nbsp;|&nbsp; <span class="text-primary fw-semibold">Drag widgets to reorder</span>
+  &nbsp;<i class="bi bi-grip-vertical text-muted"></i>
+</p>
+
+<!-- SORTABLE WIDGETS -->
+<div id="dashboard-grid">
+
+  <!-- STATS ROW -->
+  <div class="widget-block mb-3" data-key="stats">
+    <div class="d-flex align-items-center mb-2 gap-2">
+      <span class="drag-handle"><i class="bi bi-grip-vertical fs-5"></i></span>
+      <span class="fw-semibold text-muted" style="font-size:.8rem">KEY METRICS</span>
+    </div>
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="card stat-card p-3 border-0" style="background:linear-gradient(135deg,#0f2557,#1e4aad)">
+          <div class="text-white-50 small mb-1">Active Employees</div>
+          <div class="fs-2 fw-bold text-white">{{ emp_count }}</div>
+          <i class="bi bi-people-fill bg-icon text-white"></i>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card p-3 border-0" style="background:linear-gradient(135deg,#0d6b3a,#1a9e5b)">
+          <div class="text-white-50 small mb-1">Total Payout</div>
+          <div class="fs-3 fw-bold text-white">₹{{ "{:,.0f}".format(payout) }}</div>
+          <i class="bi bi-currency-rupee bg-icon text-white"></i>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card p-3 border-0" style="background:linear-gradient(135deg,#7c2d12,#ea580c)">
+          <div class="text-white-50 small mb-1">Payrolls Processed</div>
+          <div class="fs-2 fw-bold text-white">{{ processed }}</div>
+          <i class="bi bi-receipt bg-icon text-white"></i>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card p-3 border-0" style="background:linear-gradient(135deg,#581c87,#9333ea)">
+          <div class="text-white-50 small mb-1">Pending Leaves</div>
+          <div class="fs-2 fw-bold text-white">{{ pending_leaves }}</div>
+          <i class="bi bi-calendar-x bg-icon text-white"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="widget-block mb-3" data-key="actions">
+    <div class="d-flex align-items-center mb-2 gap-2">
+      <span class="drag-handle"><i class="bi bi-grip-vertical fs-5"></i></span>
+      <span class="fw-semibold text-muted" style="font-size:.8rem">QUICK ACTIONS</span>
+    </div>
+    <div class="card p-3">
+      <div class="d-flex flex-wrap gap-2">
+        <a href="/employees"       class="btn btn-outline-primary btn-sm"><i class="bi bi-person-plus me-1"></i>Add Employee</a>
+        <a href="/attendance"      class="btn btn-outline-success btn-sm"><i class="bi bi-calendar-check me-1"></i>Attendance</a>
+        <a href="/leave"           class="btn btn-outline-warning btn-sm"><i class="bi bi-calendar-x me-1"></i>Leave</a>
+        <a href="/overtime"        class="btn btn-outline-info btn-sm"><i class="bi bi-clock me-1"></i>Overtime</a>
+        <a href="/payroll"         class="btn btn-outline-danger btn-sm"><i class="bi bi-cash me-1"></i>Process Payroll</a>
+        <a href="/salary_register" class="btn btn-outline-secondary btn-sm"><i class="bi bi-download me-1"></i>Salary Register</a>
+        <a href="/salary_revision" class="btn btn-outline-dark btn-sm"><i class="bi bi-arrow-up-circle me-1"></i>Salary Revision</a>
+        <a href="/bank_sheet"      class="btn btn-outline-success btn-sm"><i class="bi bi-bank me-1"></i>Bank Sheet</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT PAYROLLS -->
+  <div class="widget-block mb-3" data-key="payrolls">
+    <div class="d-flex align-items-center mb-2 gap-2">
+      <span class="drag-handle"><i class="bi bi-grip-vertical fs-5"></i></span>
+      <span class="fw-semibold text-muted" style="font-size:.8rem">RECENT PAYROLLS</span>
+      <a href="/payroll" class="ms-auto btn btn-xs btn-outline-primary" style="font-size:.75rem;padding:2px 10px">View All</a>
+    </div>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" style="font-size:.84rem">
+          <thead><tr>
+            <th>Employee</th><th>Department</th><th>Month</th><th class="text-end">Net Pay</th>
+          </tr></thead>
+          <tbody>
+            {% for r in recent_payroll %}
+            <tr>
+              <td class="fw-semibold">{{ r[0] }}</td>
+              <td><span class="badge bg-light text-secondary">{{ r[1] }}</span></td>
+              <td>{{ r[4] }}</td>
+              <td class="text-end fw-bold text-success">₹{{ "{:,.0f}".format(r[3]) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No payrolls yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT LEAVES -->
+  <div class="widget-block mb-3" data-key="leaves">
+    <div class="d-flex align-items-center mb-2 gap-2">
+      <span class="drag-handle"><i class="bi bi-grip-vertical fs-5"></i></span>
+      <span class="fw-semibold text-muted" style="font-size:.8rem">RECENT LEAVES</span>
+      <a href="/leave" class="ms-auto btn btn-xs btn-outline-primary" style="font-size:.75rem;padding:2px 10px">View All</a>
+    </div>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" style="font-size:.84rem">
+          <thead><tr>
+            <th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th>
+          </tr></thead>
+          <tbody>
+            {% for r in recent_leaves %}
+            <tr>
+              <td class="fw-semibold">{{ r[0] }}</td>
+              <td><span class="badge bg-warning text-dark">{{ r[3] }}</span></td>
+              <td>{{ r[1] }}</td><td>{{ r[2] }}</td>
+              <td>{{ r[4] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No leaves yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end dashboard-grid -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const STORAGE_KEY = 'payrollpro_dash_order';
+  const grid = document.getElementById('dashboard-grid');
+
+  function applyOrder(order) {
+    if (!order || !order.length) return;
+    order.forEach(key => {
+      const el = grid.querySelector(`[data-key="${key}"]`);
+      if (el) grid.appendChild(el);
+    });
+  }
+
+  // Load saved order
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    applyOrder(saved);
+  } catch(e) {}
+
+  // Make sortable
+  Sortable.create(grid, {
+    animation: 180,
+    handle: '.drag-handle',
+    ghostClass: 'sortable-ghost',
+    onEnd() {
+      const order = [...grid.querySelectorAll('[data-key]')].map(el => el.dataset.key);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+    }
+  });
+</script>
+{% endblock %}

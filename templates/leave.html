@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Leaves{% endblock %}
+{% block page_title %}Leave Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addLeaveModal">
+    <i class="bi bi-plus-circle me-1"></i>Add Leave
+  </button>
+</div>
+
+<div class="card">
+  <div class="card-header">Leave Records</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.84rem">
+      <thead><tr>
+        <th>#</th><th>Employee</th><th>Leave Type</th><th>From</th><th>To</th>
+        <th class="text-center">Days</th><th>Reason</th><th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="fw-semibold">{{ r['name'] }}</td>
+          <td><span class="badge bg-warning text-dark">{{ r['leave_type'] }}</span></td>
+          <td>{{ r['from_date'] }}</td>
+          <td>{{ r['to_date'] }}</td>
+          <td class="text-center">{{ r['days'] }}</td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r['reason'] }}</td>
+          <td>
+            {% if r['status']=='Approved' %}<span class="badge bg-success">Approved</span>
+            {% elif r['status']=='Pending' %}<span class="badge bg-warning text-dark">Pending</span>
+            {% else %}<span class="badge bg-danger">Rejected</span>{% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <button class="btn btn-xs btn-outline-primary" style="font-size:.75rem;padding:2px 8px"
+                data-bs-toggle="modal" data-bs-target="#editLeave{{ r['id'] }}"><i class="bi bi-pencil"></i></button>
+              <form method="POST" action="/delete_leave/{{ r['id'] }}" onsubmit="return confirm('Delete?')">
+                <button class="btn btn-xs btn-outline-danger" style="font-size:.75rem;padding:2px 8px"><i class="bi bi-trash"></i></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <!-- Edit modal -->
+        <div class="modal fade" id="editLeave{{ r['id'] }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST" action="/edit_leave/{{ r['id'] }}">
+                <div class="modal-header" style="background:#0f2557;color:#fff">
+                  <h6 class="modal-title mb-0">Edit Leave — {{ r['name'] }}</h6>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <div class="col-6">
+                      <label class="form-label">Leave Type</label>
+                      <select name="leave_type" class="form-select form-select-sm">
+                        {% for lt in ['CL','SL','EL','ML','LWP','Comp Off'] %}
+                        <option {% if r['leave_type']==lt %}selected{% endif %}>{{ lt }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Status</label>
+                      <select name="status" class="form-select form-select-sm">
+                        <option {% if r['status']=='Approved' %}selected{% endif %}>Approved</option>
+                        <option {% if r['status']=='Pending' %}selected{% endif %}>Pending</option>
+                        <option {% if r['status']=='Rejected' %}selected{% endif %}>Rejected</option>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Reason</label>
+                      <input type="text" name="reason" class="form-control form-control-sm" value="{{ r['reason'] }}"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <tr><td colspan="9" class="text-center py-4 text-muted">No leave records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Leave Modal -->
+<div class="modal fade" id="addLeaveModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">
+        <div class="modal-header" style="background:#0f2557;color:#fff">
+          <h6 class="modal-title mb-0"><i class="bi bi-calendar-x me-2"></i>Add Leave</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Employee</label>
+              <select name="emp_id" class="form-select form-select-sm" required>
+                <option value="">— Select Employee —</option>
+                {% for e in employees %}<option value="{{ e['id'] }}">{{ e['name'] }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Leave Type</label>
+              <select name="leave_type" class="form-select form-select-sm">
+                <option>CL</option><option>SL</option><option>EL</option>
+                <option>ML</option><option>LWP</option><option>Comp Off</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-select form-select-sm">
+                <option>Approved</option><option>Pending</option><option>Rejected</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">From Date</label>
+              <input type="date" name="from_date" class="form-control form-control-sm" required/>
+            </div>
+            <div class="col-6">
+              <label class="form-label">To Date</label>
+              <input type="date" name="to_date" class="form-control form-control-sm" required/>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Reason</label>
+              <input type="text" name="reason" class="form-control form-control-sm" placeholder="Optional"/>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg me-1"></i>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

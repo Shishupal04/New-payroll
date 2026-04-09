@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}PayrollPro{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --brand:   #0f2557;
+      --brand2:  #1a3a7c;
+      --accent:  #2563eb;
+      --sidebar-w: 230px;
+      --topbar-h:  58px;
+    }
+    * { box-sizing: border-box; }
+    body { background: #f1f4fb; font-family: 'DM Sans', sans-serif; margin: 0; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: var(--brand); color: #c8d4ee;
+      position: fixed; top: 0; left: 0; z-index: 200;
+      display: flex; flex-direction: column;
+      transition: transform .25s;
+    }
+    .sidebar-brand {
+      background: #08173a;
+      padding: 0 18px;
+      height: var(--topbar-h);
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.1rem; font-weight: 700; color: #fff;
+      letter-spacing: .3px;
+    }
+    .sidebar-brand .logo-icon {
+      width:32px; height:32px; border-radius:8px;
+      background: var(--accent);
+      display:grid; place-items:center;
+      font-size:16px; color:#fff; flex-shrink:0;
+    }
+    .nav-section {
+      font-size: .65rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1.2px; color: #4e6ea6;
+      padding: 14px 18px 4px;
+    }
+    .nav-link {
+      color: #8eaad6; padding: 8px 18px;
+      display: flex; align-items: center; gap: 9px;
+      font-size: .84rem; font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: all .15s; text-decoration: none;
+    }
+    .nav-link:hover { background: rgba(255,255,255,.07); color: #fff; }
+    .nav-link.active { background: rgba(37,99,235,.25); color: #fff; border-left-color: var(--accent); }
+    .nav-link i { width: 16px; font-size: 14px; }
+    .sidebar-footer { margin-top: auto; padding: 14px 18px; }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: fixed; top: 0;
+      left: var(--sidebar-w); right: 0;
+      height: var(--topbar-h);
+      background: #fff;
+      border-bottom: 1px solid #dde3f0;
+      display: flex; align-items: center;
+      padding: 0 24px;
+      z-index: 100;
+      gap: 12px;
+    }
+    .topbar-title { font-weight: 700; font-size: 1rem; color: #1a2744; flex: 1; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .user-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: #f0f4ff; padding: 5px 12px 5px 8px;
+      border-radius: 20px; font-size: .82rem; font-weight: 600;
+      color: var(--brand);
+    }
+    .user-avatar {
+      width:28px; height:28px; border-radius:50%;
+      background: var(--accent); color:#fff;
+      display:grid; place-items:center; font-size:12px; font-weight:700;
+    }
+    .signout-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #fff1f2; color: #b91c1c;
+      border: 1px solid #fecaca; border-radius: 8px;
+      padding: 5px 14px; font-size: .82rem; font-weight: 600;
+      text-decoration: none; transition: all .15s;
+    }
+    .signout-btn:hover { background: #b91c1c; color: #fff; }
+
+    /* ── Main ── */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topbar-h);
+      padding: 22px 26px;
+      min-height: calc(100vh - var(--topbar-h));
+    }
+
+    /* ── Cards / Tables ── */
+    .card { border: 1px solid #dde3f0; border-radius: 12px; box-shadow: 0 1px 6px rgba(15,37,87,.06); }
+    .card-header { background: #fff; border-bottom: 1px solid #e8edf7; border-radius: 12px 12px 0 0 !important; padding: 14px 18px; font-weight: 600; color: #1a2744; }
+    .table thead th { background: #f5f7fd; font-size: .73rem; text-transform: uppercase; letter-spacing: .6px; color: #5570a0; border-bottom: 2px solid #dde3f0; }
+    .table tbody tr:hover { background: #f8f9ff; }
+    .badge-role { font-size: .68rem; }
+    .stat-card { position: relative; overflow: hidden; }
+    .stat-card .bg-icon {
+      position:absolute; right:-10px; bottom:-10px;
+      font-size:5rem; opacity:.08;
+    }
+    .form-label { font-weight: 600; font-size: .82rem; color: #374874; }
+    .form-control, .form-select { font-size: .88rem; border-color: #d0d8ee; border-radius: 8px; }
+    .form-control:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); }
+    .btn-primary:hover { background: #1d4ed8; }
+
+    /* flash */
+    .alerts-wrap { position: sticky; top: calc(var(--topbar-h) + 10px); z-index: 99; }
+
+    /* drag handle */
+    .drag-handle { cursor: grab; color: #9ba8c5; }
+    .drag-handle:active { cursor: grabbing; }
+    .sortable-ghost { opacity: .4; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-icon"><i class="bi bi-buildings"></i></div>
+    PayrollPro
+  </div>
+
+  <div class="nav-section">Main</div>
+  <a href="/" class="nav-link {% if request.path=='/' %}active{% endif %}">
+    <i class="bi bi-speedometer2"></i> Dashboard
+  </a>
+
+  <div class="nav-section">HR Management</div>
+  <a href="/employees" class="nav-link {% if 'employees' in request.path %}active{% endif %}">
+    <i class="bi bi-people"></i> Employee Master
+  </a>
+  <a href="/salary_structure" class="nav-link {% if 'salary_structure' in request.path %}active{% endif %}">
+    <i class="bi bi-layers"></i> Salary Structure
+  </a>
+  <a href="/attendance" class="nav-link {% if 'attendance' in request.path %}active{% endif %}">
+    <i class="bi bi-calendar-check"></i> Attendance
+  </a>
+  <a href="/leave" class="nav-link {% if 'leave' in request.path %}active{% endif %}">
+    <i class="bi bi-calendar-x"></i> Leaves
+  </a>
+  <a href="/overtime" class="nav-link {% if 'overtime' in request.path %}active{% endif %}">
+    <i class="bi bi-clock-history"></i> Overtime
+  </a>
+  <a href="/salary_revision" class="nav-link {% if 'salary_revision' in request.path %}active{% endif %}">
+    <i class="bi bi-arrow-up-circle"></i> Salary Revision
+  </a>
+
+  <div class="nav-section">Payroll</div>
+  <a href="/payroll" class="nav-link {% if request.path=='/payroll' %}active{% endif %}">
+    <i class="bi bi-cash-stack"></i> Process Payroll
+  </a>
+
+  <div class="nav-section">Reports</div>
+  <a href="/reports" class="nav-link {% if request.path=='/reports' %}active{% endif %}">
+    <i class="bi bi-bar-chart-line"></i> Reports
+  </a>
+  <a href="/salary_register" class="nav-link {% if 'salary_register' in request.path %}active{% endif %}">
+    <i class="bi bi-journal-text"></i> Salary Register
+  </a>
+  <a href="/bank_sheet" class="nav-link {% if 'bank_sheet' in request.path %}active{% endif %}">
+    <i class="bi bi-bank"></i> Bank Sheet
+  </a>
+  <a href="/statutory_report" class="nav-link {% if 'statutory' in request.path %}active{% endif %}">
+    <i class="bi bi-shield-check"></i> Statutory Report
+  </a>
+
+  <div class="nav-section">Settings</div>
+  <a href="/companies" class="nav-link {% if 'compan' in request.path %}active{% endif %}">
+    <i class="bi bi-briefcase"></i> Companies
+  </a>
+  {% if session.get('role')=='admin' %}
+  <a href="/users" class="nav-link {% if 'users' in request.path %}active{% endif %}">
+    <i class="bi bi-person-gear"></i> Users
+  </a>
+  <a href="/backup_page" class="nav-link {% if 'backup' in request.path %}active{% endif %}">
+    <i class="bi bi-cloud-arrow-up"></i> Backup
+  </a>
+  {% endif %}
+
+  <div class="sidebar-footer">
+    <div style="font-size:.7rem;color:#4e6ea6">© 2025 PayrollPro v4</div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+  <div class="topbar-right">
+    {% if session.get('user') %}
+    <div class="user-badge">
+      <div class="user-avatar">{{ session['user'][0].upper() }}</div>
+      <span>{{ session['user'] }}</span>
+      <span class="badge bg-primary badge-role ms-1">{{ session.get('role','') }}</span>
+    </div>
+    <a href="/logout" class="signout-btn">
+      <i class="bi bi-box-arrow-right"></i> Sign Out
+    </a>
+    {% else %}
+    <a href="/login" class="btn btn-sm btn-primary">
+      <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="alerts-wrap mb-3">
+      {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }} alert-dismissible fade show mb-1 py-2" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

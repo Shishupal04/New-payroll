@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+{% block page_title %}Attendance{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+  <form class="d-flex gap-2" method="GET">
+    <label class="form-label mb-0 fw-semibold me-1 align-self-center">Month:</label>
+    <input type="month" name="month" value="{{ month }}" class="form-control form-control-sm" style="width:160px"/>
+    <button class="btn btn-sm btn-primary">Go</button>
+  </form>
+  <button class="btn btn-sm btn-success ms-auto" data-bs-toggle="modal" data-bs-target="#addAttModal">
+    <i class="bi bi-plus-circle me-1"></i>Mark Attendance
+  </button>
+</div>
+
+<div class="card">
+  <div class="card-header">Attendance Records — {{ month }}</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.84rem">
+      <thead><tr>
+        <th>#</th><th>Employee</th><th class="text-center">Days in Month (A)</th>
+        <th class="text-center">Arrear Days (B)</th><th class="text-center">LOPR Days (C)</th>
+        <th class="text-center">LOP Days (D)</th><th class="text-center">Net Days Worked (E=A+B+C−D)</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="fw-semibold">{{ r['name'] }}</td>
+          <td class="text-center">{{ r['days_in_month'] }}</td>
+          <td class="text-center">{{ r['arrear_days'] }}</td>
+          <td class="text-center">{{ r['lopr_days'] }}</td>
+          <td class="text-center {% if r['lop_days']>0 %}text-danger fw-bold{% endif %}">{{ r['lop_days'] }}</td>
+          <td class="text-center fw-bold text-primary">
+            {{ r['days_in_month'] + r['arrear_days'] + r['lopr_days'] - r['lop_days'] }}
+          </td>
+          <td>
+            <form method="POST" action="/delete_attendance/{{ r['id'] }}" onsubmit="return confirm('Delete this record?')">
+              <button class="btn btn-xs btn-outline-danger" style="font-size:.75rem;padding:2px 8px"><i class="bi bi-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center py-4 text-muted">No attendance records for {{ month }}.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addAttModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/attendance?month={{ month }}">
+        <div class="modal-header" style="background:#0f2557;color:#fff">
+          <h6 class="modal-title mb-0"><i class="bi bi-calendar-check me-2"></i>Mark Attendance</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Employee</label>
+              <select name="emp_id" class="form-select form-select-sm" required>
+                <option value="">— Select —</option>
+                {% for e in employees %}<option value="{{ e['id'] }}">{{ e['name'] }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Month</label>
+              <input type="month" name="month" class="form-control form-control-sm" value="{{ month }}" required/>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Days in Month (A)</label>
+              <input type="number" name="days_in_month" class="form-control form-control-sm" value="26" min="1" max="31" required/>
+            </div>
+            <div class="col-4">
+              <label class="form-label">Arrear Days (B)</label>
+              <input type="number" name="arrear_days" class="form-control form-control-sm" value="0" min="0"/>
+            </div>
+            <div class="col-4">
+              <label class="form-label">LOPR Days (C)</label>
+              <input type="number" name="lopr_days" class="form-control form-control-sm" value="0" min="0"/>
+            </div>
+            <div class="col-4">
+              <label class="form-label">LOP Days (D)</label>
+              <input type="number" name="lop_days" class="form-control form-control-sm" value="0" min="0"/>
+            </div>
+            <div class="col-12">
+              <div class="alert alert-info py-2 mb-0" style="font-size:.8rem">
+                <b>Net Days Worked = A + B + C − D</b><br/>
+                Salary will be prorated accordingly on payroll processing.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg me-1"></i>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

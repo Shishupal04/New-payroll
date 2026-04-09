@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Payroll{% endblock %}
+{% block page_title %}Payroll Processing{% endblock %}
+
+{% block content %}
+<div class="card mb-3">
+  <div class="card-header"><i class="bi bi-cash-stack me-1"></i> Process Payroll</div>
+  <div class="card-body">
+    <form method="POST" action="/payroll?month={{ month }}" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Employee</label>
+        <select name="emp_id" class="form-select form-select-sm" required>
+          <option value="">— Select Employee —</option>
+          {% for e in employees %}<option value="{{ e['id'] }}">{{ e['name'] }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Month</label>
+        <input type="month" name="month" value="{{ month }}" class="form-control form-control-sm" required/>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">TDS (₹)</label>
+        <input type="number" name="tds" value="0" step="0.01" class="form-control form-control-sm"/>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Other Deduction (₹)</label>
+        <input type="number" name="other_deduction" value="0" step="0.01" class="form-control form-control-sm"/>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-success btn-sm w-100">
+          <i class="bi bi-play-fill me-1"></i>Process
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Month filter -->
+<div class="d-flex gap-2 mb-3 align-items-center">
+  <form class="d-flex gap-2" method="GET">
+    <label class="form-label mb-0 align-self-center fw-semibold">View Month:</label>
+    <input type="month" name="month" value="{{ month }}" class="form-control form-control-sm" style="width:160px"/>
+    <button class="btn btn-sm btn-outline-primary">Go</button>
+  </form>
+  {% if records %}
+  <a href="/salary_register?month={{ month }}" class="btn btn-sm btn-outline-success ms-auto">
+    <i class="bi bi-file-excel me-1"></i>Export Register
+  </a>
+  <a href="/bank_sheet?month={{ month }}" class="btn btn-sm btn-outline-info">
+    <i class="bi bi-bank me-1"></i>Bank Sheet
+  </a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-header">Processed Payrolls — {{ month }}</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.83rem">
+      <thead><tr>
+        <th>#</th><th>Employee</th><th>Basic</th><th>HRA</th><th>OT</th>
+        <th>Gross</th><th>PF</th><th>ESI</th><th>PT</th><th>TDS</th><th>LOP</th>
+        <th class="text-success">Net</th><th>Payslip</th><th>Del</th>
+      </tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="fw-semibold">{{ r['name'] }}</td>
+          <td>₹{{ "{:,.0f}".format(r['basic']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['hra']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['ot_allowance']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['gross']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['pf']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['esi']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['pt']) }}</td>
+          <td>₹{{ "{:,.0f}".format(r['tds']) }}</td>
+          <td class="{% if r['lop']>0 %}text-danger{% endif %}">₹{{ "{:,.0f}".format(r['lop']) }}</td>
+          <td class="fw-bold text-success">₹{{ "{:,.0f}".format(r['net']) }}</td>
+          <td>
+            <a href="/payslip/{{ r['id'] }}" class="btn btn-xs btn-outline-primary" style="font-size:.75rem;padding:2px 8px">
+              <i class="bi bi-file-earmark-pdf"></i> PDF
+            </a>
+          </td>
+          <td>
+            {% if session.get('role')=='admin' %}
+            <form method="POST" action="/delete_payroll/{{ r['id'] }}" onsubmit="return confirm('Delete this payroll?')">
+              <button class="btn btn-xs btn-outline-danger" style="font-size:.75rem;padding:2px 8px"><i class="bi bi-trash"></i></button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="14" class="text-center py-4 text-muted">No payrolls processed for {{ month }}.</td></tr>
+        {% endfor %}
+      </tbody>
+      {% if records %}
+      <tfoot style="background:#f0f4ff;font-weight:700;font-size:.83rem">
+        <tr>
+          <td colspan="5" class="text-end pe-2">Totals:</td>
+          <td>₹{{ "{:,.0f}".format(records|sum(attribute='gross')) }}</td>
+          <td>₹{{ "{:,.0f}".format(records|sum(attribute='pf')) }}</td>
+          <td>₹{{ "{:,.0f}".format(records|sum(attribute='esi')) }}</td>
+          <td>₹{{ "{:,.0f}".format(records|sum(attribute='pt')) }}</td>
+          <td>₹{{ "{:,.0f}".format(records|sum(attribute='tds')) }}</td>
+          <td>₹{{ "{:,.0f}".format(records|sum(attribute='lop')) }}</td>
+          <td class="text-success">₹{{ "{:,.0f}".format(records|sum(attribute='net')) }}</td>
+          <td colspan="2"></td>
+        </tr>
+      </tfoot>
+      {% endif %}
+    </table>
+  </div>
+</div>
+{% endblock %}

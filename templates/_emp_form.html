@@ -1,0 +1,104 @@
+<div class="row g-3">
+  <div class="col-md-3">
+    <label class="form-label">Company</label>
+    <select name="company_id" class="form-select form-select-sm" required>
+      {% for c in companies %}<option value="{{ c['id'] }}" {% if emp and emp['company_id']==c['id'] %}selected{% endif %}>{{ c['name'] }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Emp Code</label>
+    <input type="text" name="emp_code" class="form-control form-control-sm" value="{{ emp['emp_code'] if emp else '' }}" placeholder="EMP001"/>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">Full Name *</label>
+    <input type="text" name="name" class="form-control form-control-sm" value="{{ emp['name'] if emp else '' }}" required/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Department</label>
+    <input type="text" name="department" class="form-control form-control-sm" value="{{ emp['department'] if emp else '' }}" list="dept-list"/>
+    <datalist id="dept-list">
+      <option value="IT"><option value="HR"><option value="Finance">
+      <option value="Operations"><option value="Sales"><option value="Admin">
+    </datalist>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Designation</label>
+    <input type="text" name="designation" class="form-control form-control-sm" value="{{ emp['designation'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Location</label>
+    <input type="text" name="location" class="form-control form-control-sm" value="{{ emp['location'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Date of Joining</label>
+    <input type="date" name="doj" class="form-control form-control-sm" value="{{ emp['doj'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Date of Birth</label>
+    <input type="date" name="dob" class="form-control form-control-sm" value="{{ emp['dob'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Gender</label>
+    <select name="gender" class="form-select form-select-sm">
+      <option {% if emp and emp['gender']=='Male' %}selected{% endif %}>Male</option>
+      <option {% if emp and emp['gender']=='Female' %}selected{% endif %}>Female</option>
+      <option {% if emp and emp['gender']=='Other' %}selected{% endif %}>Other</option>
+    </select>
+  </div>
+</div>
+
+<hr class="my-3"/><h6 class="text-primary mb-2" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.8px">Salary Components</h6>
+<div class="row g-3">
+  <div class="col-md-2">
+    <label class="form-label">Basic (₹)</label>
+    <input type="number" name="basic" class="form-control form-control-sm" step="0.01" value="{{ emp['basic'] if emp else '0' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">HRA (₹)</label>
+    <input type="number" name="hra" class="form-control form-control-sm" step="0.01" value="{{ emp['hra'] if emp else '0' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Taxable Allow. (₹)</label>
+    <input type="number" name="taxable_allow" class="form-control form-control-sm" step="0.01" value="{{ emp['taxable_allow'] if emp else '0' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Night Shift Allow. (₹)</label>
+    <input type="number" name="night_shift_allow" class="form-control form-control-sm" step="0.01" value="{{ emp['night_shift_allow'] if emp else '0' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">PF Relief (₹)</label>
+    <input type="number" name="pf_relief" class="form-control form-control-sm" step="0.01" value="{{ emp['pf_relief'] if emp else '0' }}"/>
+  </div>
+</div>
+
+<hr class="my-3"/><h6 class="text-primary mb-2" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.8px">Bank & Statutory</h6>
+<div class="row g-3">
+  <div class="col-md-4">
+    <label class="form-label">Bank Account No.</label>
+    <input type="text" name="bank_account" class="form-control form-control-sm" value="{{ emp['bank_account'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">IFSC Code</label>
+    <input type="text" name="ifsc" class="form-control form-control-sm" value="{{ emp['ifsc'] if emp else '' }}" style="font-family:'DM Mono',monospace"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">PAN No.</label>
+    <input type="text" name="pan" class="form-control form-control-sm" value="{{ emp['pan'] if emp else '' }}" style="font-family:'DM Mono',monospace" placeholder="ABCDE1234F"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">UAN</label>
+    <input type="text" name="uan" class="form-control form-control-sm" value="{{ emp['uan'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">PF Number</label>
+    <input type="text" name="pf_number" class="form-control form-control-sm" value="{{ emp['pf_number'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">ESI Number</label>
+    <input type="text" name="esi_number" class="form-control form-control-sm" value="{{ emp['esi_number'] if emp else '' }}"/>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">EPS Number</label>
+    <input type="text" name="eps_number" class="form-control form-control-sm" value="{{ emp['eps_number'] if emp else '' }}"/>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Statutory Report{% endblock %}
+{% block page_title %}Statutory Report{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 align-items-center">
+  <form class="d-flex gap-2" method="GET">
+    <input type="month" name="month" value="{{ month }}" class="form-control form-control-sm" style="width:160px"/>
+    <button class="btn btn-sm btn-primary">Go</button>
+  </form>
+</div>
+<div class="card">
+  <div class="card-header">PF / ESI / PT Statement — {{ month }}</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.84rem">
+      <thead><tr>
+        <th>#</th><th>Name</th><th>UAN</th><th>PF No.</th><th>ESI No.</th>
+        <th class="text-end">Basic (₹)</th><th class="text-end">PF (₹)</th>
+        <th class="text-end">ESI (₹)</th><th class="text-end">PT (₹)</th>
+      </tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="fw-semibold">{{ r['name'] }}</td>
+          <td><code style="font-size:.78rem">{{ r['uan'] }}</code></td>
+          <td>{{ r['pf_number'] }}</td>
+          <td>{{ r['esi_number'] }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['basic']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['pf']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['esi']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['pt']) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="text-center py-4 text-muted">No data for {{ month }}.</td></tr>
+        {% endfor %}
+      </tbody>
+      {% if records %}
+      <tfoot style="background:#f0f4ff;font-weight:700">
+        <tr>
+          <td colspan="6" class="text-end pe-2">Totals:</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(records|sum(attribute='pf')) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(records|sum(attribute='esi')) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(records|sum(attribute='pt')) }}</td>
+        </tr>
+      </tfoot>
+      {% endif %}
+    </table>
+  </div>
+</div>
+{% endblock %}

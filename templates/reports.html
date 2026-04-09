@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Payroll Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+  <form class="d-flex gap-2" method="GET">
+    <label class="form-label mb-0 align-self-center fw-semibold">Month:</label>
+    <input type="month" name="month" value="{{ month }}" class="form-control form-control-sm" style="width:160px"/>
+    <button class="btn btn-sm btn-primary">Go</button>
+  </form>
+  <div class="ms-auto d-flex gap-2">
+    <a href="/salary_register?month={{ month }}" class="btn btn-sm btn-outline-success">
+      <i class="bi bi-file-excel me-1"></i>Salary Register Excel
+    </a>
+    <a href="/bank_sheet?month={{ month }}" class="btn btn-sm btn-outline-info">
+      <i class="bi bi-bank me-1"></i>Bank Sheet
+    </a>
+    <a href="/statutory_report?month={{ month }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-shield-check me-1"></i>Statutory
+    </a>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+{% if totals %}
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-2">
+    <div class="card text-center p-2 border-0" style="background:#e8f0fe">
+      <div style="font-size:.75rem;color:#3d5afe;font-weight:600">Total Gross</div>
+      <div class="fw-bold" style="color:#1a3a7c">₹{{ "{:,.0f}".format(totals.gross) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="card text-center p-2 border-0" style="background:#fff3e0">
+      <div style="font-size:.75rem;color:#e65100;font-weight:600">Total PF</div>
+      <div class="fw-bold" style="color:#bf360c">₹{{ "{:,.0f}".format(totals.pf) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="card text-center p-2 border-0" style="background:#fce4ec">
+      <div style="font-size:.75rem;color:#c62828;font-weight:600">Total ESI</div>
+      <div class="fw-bold" style="color:#b71c1c">₹{{ "{:,.0f}".format(totals.esi) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="card text-center p-2 border-0" style="background:#f3e5f5">
+      <div style="font-size:.75rem;color:#6a1b9a;font-weight:600">Total PT</div>
+      <div class="fw-bold" style="color:#4a148c">₹{{ "{:,.0f}".format(totals.pt) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="card text-center p-2 border-0" style="background:#e8f5e9">
+      <div style="font-size:.75rem;color:#1b5e20;font-weight:600">Total TDS</div>
+      <div class="fw-bold" style="color:#1b5e20">₹{{ "{:,.0f}".format(totals.tds) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="card text-center p-2 border-0" style="background:#e0f2f1">
+      <div style="font-size:.75rem;color:#006064;font-weight:600">Total Net</div>
+      <div class="fw-bold" style="color:#004d40">₹{{ "{:,.0f}".format(totals.net) }}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">Payroll Summary — {{ month }}</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.83rem">
+      <thead><tr>
+        <th>#</th><th>Name</th><th>Department</th><th>Designation</th>
+        <th class="text-end">Basic</th><th class="text-end">HRA</th>
+        <th class="text-end">Allow.</th><th class="text-end">OT</th>
+        <th class="text-end">Gross</th><th class="text-end">PF</th>
+        <th class="text-end">ESI</th><th class="text-end">PT</th>
+        <th class="text-end">TDS</th><th class="text-end">LOP</th>
+        <th class="text-end">Net</th>
+      </tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="fw-semibold">{{ r['name'] }}</td>
+          <td>{{ r['department'] }}</td>
+          <td>{{ r['designation'] }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['basic']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['hra']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['taxable_allow']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['ot_allowance']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['gross']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['pf']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['esi']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['pt']) }}</td>
+          <td class="text-end">{{ "{:,.0f}".format(r['tds']) }}</td>
+          <td class="text-end {% if r['lop']>0 %}text-danger{% endif %}">{{ "{:,.0f}".format(r['lop']) }}</td>
+          <td class="text-end fw-bold text-success">{{ "{:,.0f}".format(r['net']) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="15" class="text-center py-4 text-muted">No payroll data for {{ month }}.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

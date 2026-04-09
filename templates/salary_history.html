@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Salary History{% endblock %}
+{% block page_title %}Salary History{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header d-flex align-items-center gap-2">
+    <a href="/salary_revision" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
+    Salary History — {{ emp['name'] if emp else '' }}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" style="font-size:.84rem">
+      <thead><tr>
+        <th>#</th><th>Effective Date</th><th class="text-end">Basic</th>
+        <th class="text-end">HRA</th><th class="text-end">Tax Allow.</th>
+        <th class="text-end">Night Shift</th><th class="text-end">PF Relief</th><th>Remarks</th>
+      </tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ r['effective_date'] }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['basic']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['hra']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['taxable_allow']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['night_shift_allow']) }}</td>
+          <td class="text-end">₹{{ "{:,.0f}".format(r['pf_relief']) }}</td>
+          <td>{{ r['remarks'] }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center py-4 text-muted">No history found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

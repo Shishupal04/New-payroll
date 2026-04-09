@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Salary Revision{% endblock %}
+{% block page_title %}Salary Revision{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-arrow-up-circle me-1"></i>New Revision</div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label">Employee</label>
+            <select name="emp_id" class="form-select form-select-sm" required>
+              <option value="">— Select —</option>
+              {% for e in employees %}<option value="{{ e['id'] }}">{{ e['name'] }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Effective Date</label>
+            <input type="date" name="date" class="form-control form-control-sm" required/>
+          </div>
+          <div class="row g-2 mb-2">
+            <div class="col-6"><label class="form-label">Basic (₹)</label>
+              <input type="number" name="basic" step="0.01" class="form-control form-control-sm" value="0"/></div>
+            <div class="col-6"><label class="form-label">HRA (₹)</label>
+              <input type="number" name="hra" step="0.01" class="form-control form-control-sm" value="0"/></div>
+            <div class="col-6"><label class="form-label">Tax Allow. (₹)</label>
+              <input type="number" name="taxable_allow" step="0.01" class="form-control form-control-sm" value="0"/></div>
+            <div class="col-6"><label class="form-label">Night Shift (₹)</label>
+              <input type="number" name="night_shift_allow" step="0.01" class="form-control form-control-sm" value="0"/></div>
+            <div class="col-6"><label class="form-label">PF Relief (₹)</label>
+              <input type="number" name="pf_relief" step="0.01" class="form-control form-control-sm" value="0"/></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Remarks</label>
+            <input type="text" name="remarks" class="form-control form-control-sm" placeholder="e.g. Annual increment"/>
+          </div>
+          <button type="submit" class="btn btn-success btn-sm w-100"><i class="bi bi-check-lg me-1"></i>Save Revision</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">Recent Revision History</div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" style="font-size:.83rem">
+          <thead><tr>
+            <th>Date</th><th>Employee</th><th class="text-end">Basic</th>
+            <th class="text-end">HRA</th><th class="text-end">Tax Allow.</th>
+            <th class="text-end">NSA</th><th>Remarks</th>
+          </tr></thead>
+          <tbody>
+            {% for r in history %}
+            <tr>
+              <td>{{ r['effective_date'] }}</td>
+              <td class="fw-semibold">{{ r['name'] }}</td>
+              <td class="text-end">₹{{ "{:,.0f}".format(r['basic']) }}</td>
+              <td class="text-end">₹{{ "{:,.0f}".format(r['hra']) }}</td>
+              <td class="text-end">₹{{ "{:,.0f}".format(r['taxable_allow']) }}</td>
+              <td class="text-end">₹{{ "{:,.0f}".format(r['night_shift_allow']) }}</td>
+              <td>{{ r['remarks'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center py-4 text-muted">No revision history.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
