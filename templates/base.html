@@ -20,16 +20,11 @@
 
     /* ── Sidebar ── */
     .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: var(--sidebar-w);
-      height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    .sidebar-menu {
-      padding-bottom: 40px;
+      width: var(--sidebar-w); min-height: 100vh;
+      background: var(--brand); color: #c8d4ee;
+      position: fixed; top: 0; left: 0; z-index: 200;
+      display: flex; flex-direction: column;
+      transition: transform .25s;
     }
     .sidebar-brand {
       background: #08173a;
@@ -138,8 +133,9 @@
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
-  <div class="logo"></div>
-  <ul class="sidebar-menu"></ul>
+  <div class="sidebar-brand">
+    <div class="logo-icon"><i class="bi bi-buildings"></i></div>
+    PayrollPro
   </div>
 
   <div class="nav-section">Main</div>
